@@ -6,6 +6,20 @@ function App() {
   // const [count, setCount] = useState(0)
   const [value,setValue] = useState('')
   const [message, setMessage] = useState(null)
+  const [previousChat , setPreviousChat] = useState([])
+  const [currentTitle,setCurrentTitle] = useState('')
+
+  const createNewChat = () => {
+    setMessage(null)
+    setValue('')
+    setCurrentTitle('')
+  }
+
+  const handleClick = (uniqueTitle)=> {
+    setCurrentTitle(uniqueTitle)
+    setMessage(null)
+    setValue('')
+  }
 
   const getMessages = async ()=> {
     // console.log('he')
@@ -20,7 +34,7 @@ function App() {
     }
 
     try {
-      console.log(value)
+      // console.log(value)
 
       const response = await fetch('http://localhost:8000/completions',options)
       const data = await response.json()
@@ -30,22 +44,54 @@ function App() {
       console.error(err)
     }
   }
-  console.log(message)
+  useEffect(()=> {
+    console.log(currentTitle,value,message)
+    if (!currentTitle && value && message) 
+    {
+      setCurrentTitle(value)
+    }
+    if (currentTitle && value && message) {
+      setPreviousChat(prevChat =>{
+        
+        return ([...prevChat,
+          {
+            title:currentTitle,
+            role:'user',
+            content:value
+            },
+          {
+            title:currentTitle,
+            role:message.role,
+            content:message.content
+          }
+        ])})
+        }
+  },[message,currentTitle])
+
+  console.log(previousChat)
+
+  const currentChat = previousChat.filter(previousChat=>previousChat.title==currentTitle)
+  const uniqueTitles = Array.from(new Set(previousChat.map(previousChat=>previousChat.title)))
+  console.log(uniqueTitles)
   return (
     <div className='app'>
       <section className = 'side-bar'>
-          <button>+ New Chat</button>
+          <button onClick={createNewChat}>+ New Chat</button>
           <ul className='history'>
-              <li>Hello</li>
+              {uniqueTitles?.map((uniqueTitle,index)=><li key={index} onClick={()=>handleClick(uniqueTitle)}>{uniqueTitle}</li>)}
           </ul>
           <nav>
               <p>DEMO</p>
           </nav>
       </section>
       <section className='main'>
-          <h1>ChatGPT Clone</h1>
+          {!currentTitle && <h1>ChatGPT Clone</h1>}
           <ul className='feed'>
-
+              {currentChat?.map((chatMessage,index)=><li key={index} >
+                <p className='role'>{chatMessage.role}</p>
+                <p>{chatMessage.content}</p>
+                
+                </li>)}
           </ul>
           <div className='bottom-section'>
               <div className="input-container">
