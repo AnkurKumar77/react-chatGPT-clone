@@ -22,7 +22,7 @@ function App() {
   }
 
   const getMessages = async ()=> {
-    // console.log('he')
+    
     const options = {
       method:'POST',
       headers: {
@@ -34,7 +34,7 @@ function App() {
     }
 
     try {
-      // console.log(value)
+      
 
       const response = await fetch('http://localhost:8000/completions',options)
       const data = await response.json()
@@ -45,7 +45,7 @@ function App() {
     }
   }
   useEffect(()=> {
-    console.log(currentTitle,value,message)
+    // console.log(currentTitle,value,message)
     if (!currentTitle && value && message) 
     {
       setCurrentTitle(value)
@@ -68,11 +68,11 @@ function App() {
         }
   },[message,currentTitle])
 
-  console.log(previousChat)
+  // console.log(previousChat)
 
   const currentChat = previousChat.filter(previousChat=>previousChat.title==currentTitle)
   const uniqueTitles = Array.from(new Set(previousChat.map(previousChat=>previousChat.title)))
-  console.log(uniqueTitles)
+  // console.log(uniqueTitles)
   return (
     <div className='app'>
       <section className = 'side-bar'>
